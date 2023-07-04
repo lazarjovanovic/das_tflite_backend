@@ -19,10 +19,11 @@ CREATE TABLE IF NOT EXISTS das_data.users
 therapy_query = """
 CREATE TABLE IF NOT EXISTS das_data.therapies
 (
-    id integer PRIMARY KEY,
+    id serial PRIMARY KEY,
     disease text,
     location text,
-    length_of_existence text,
+    length_of_existence_weeks_from integer,
+    length_of_existence_weeks_to integer,
     dimension_width_mm integer,
     dimension_height_mm integer,
     patient_age_from integer,
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS das_data.therapies
 image_query = """
 CREATE TABLE IF NOT EXISTS das_data.images
 (
-    id integer PRIMARY KEY,
+    id serial PRIMARY KEY,
     name text,
     image_default_class text,
     processed boolean,
@@ -48,7 +49,7 @@ CREATE TABLE IF NOT EXISTS das_data.images
 examination_query = """
 CREATE TABLE IF NOT EXISTS das_data.examinations
 (
-    id integer PRIMARY KEY,
+    id serial PRIMARY KEY,
     user_id uuid REFERENCES das_data.users(id),
     image_id integer REFERENCES das_data.images(id),
     image_class text,

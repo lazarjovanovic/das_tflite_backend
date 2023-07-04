@@ -1,6 +1,8 @@
 from configparser import ConfigParser
 from utils.logger import logging
 
+PATH_STORE_EXAMINATION_IMAGES = "examination_images/"
+
 
 def get_flask_config(filename='config.ini'):
     flask_config = dict()
