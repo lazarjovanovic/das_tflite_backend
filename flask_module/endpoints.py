@@ -32,8 +32,11 @@ def register():
 
 @app.route("/add_therapy", methods=["POST"])
 def add_therapy():
-    data = request.json
+    authorization_id = request.headers.get("Authorization", "")
+    if authorization_id == "":
+        return "Authorization failed", 401
 
+    data = request.json
     status_flag = flask_features.perform_adding_new_therapy(data)
     return_dict = {"status_flag": status_flag}
     return jsonify(return_dict)
@@ -41,8 +44,11 @@ def add_therapy():
 
 @app.route("/update_therapy", methods=["PUT"])
 def update_therapy():
-    data = request.json
+    authorization_id = request.headers.get("Authorization", "")
+    if authorization_id == "":
+        return "Authorization failed", 401
 
+    data = request.json
     status_flag = flask_features.perform_updating_therapy(data)
     return_dict = {"status_flag": status_flag}
     return jsonify(return_dict)
@@ -50,18 +56,30 @@ def update_therapy():
 
 @app.route("/get_therapies_by_doctor_id/<doctor_id>", methods=["GET"])
 def get_therapies_by_doctor_id(doctor_id: str):
+    authorization_id = request.headers.get("Authorization", "")
+    if authorization_id == "":
+        return "Authorization failed", 401
+
     therapies = flask_features.perform_get_therapies_by_doctor_id(doctor_id)
     return jsonify(therapies)
 
 
 @app.route("/get_therapies_by_disease/<disease_id>", methods=["GET"])
 def get_therapies_by_disease(disease_id: str):
+    authorization_id = request.headers.get("Authorization", "")
+    if authorization_id == "":
+        return "Authorization failed", 401
+
     therapies = flask_features.perform_get_therapies_by_disease(disease_id)
     return jsonify(therapies)
 
 
 @app.route("/delete_therapy_by_id/<therapy_id>", methods=["DELETE"])
 def delete_therapy_by_id(therapy_id: str):
+    authorization_id = request.headers.get("Authorization", "")
+    if authorization_id == "":
+        return "Authorization failed", 401
+
     status_flag = flask_features.perform_delete_therapy_by_id(therapy_id)
     return_dict = {"status_flag": status_flag}
     return jsonify(return_dict)
@@ -69,6 +87,10 @@ def delete_therapy_by_id(therapy_id: str):
 
 @app.route("/process_examination", methods=["POST"])
 def process_examination():
+    authorization_id = request.headers.get("Authorization", "")
+    if authorization_id == "":
+        return "Authorization failed", 401
+
     examination_dict = dict()
     examination_dict["location"] = request.form["location"]
     examination_dict["length_of_existence_weeks"] = request.form["length_of_existence_weeks"]
@@ -96,12 +118,20 @@ def process_examination():
 
 @app.route("/get_examinations_by_patient_id/<patient_id>", methods=["GET"])
 def get_examinations_by_patient_id(patient_id: str):
+    authorization_id = request.headers.get("Authorization", "")
+    if authorization_id == "":
+        return "Authorization failed", 401
+
     examinations = flask_features.perform_get_examinations_by_patient_id(patient_id)
     return jsonify(examinations)
 
 
 @app.route("/get_examination_images", methods=["POST"])
 def get_examination_images():
+    authorization_id = request.headers.get("Authorization", "")
+    if authorization_id == "":
+        return "Authorization failed", 401
+
     image_ids = request.json
     images = flask_features.perform_get_examinations_images_by_ids(image_ids)
     return send_file(images, as_attachment=True, download_name="images.zip")
