@@ -1,6 +1,5 @@
 import os
-
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import flask_module.features as flask_features
 import base64
 from utils.read_config import PATH_STORE_EXAMINATION_IMAGES
@@ -97,5 +96,12 @@ def process_examination():
 
 @app.route("/get_examinations_by_patient_id/<patient_id>", methods=["GET"])
 def get_examinations_by_patient_id(patient_id: str):
-    therapies = flask_features.perform_get_examinations_by_patient_id(patient_id)
-    return jsonify(therapies)
+    examinations = flask_features.perform_get_examinations_by_patient_id(patient_id)
+    return jsonify(examinations)
+
+
+@app.route("/get_examination_images", methods=["POST"])
+def get_examination_images():
+    image_ids = request.json
+    images = flask_features.perform_get_examinations_images_by_ids(image_ids)
+    return send_file(images, as_attachment=True, download_name="images.zip")

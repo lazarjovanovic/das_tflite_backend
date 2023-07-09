@@ -57,4 +57,9 @@ CREATE TABLE IF NOT EXISTS das_data.examinations
 );
 """
 
-setup_queries = [schema_query, users_query, therapy_query, image_query, examination_query]
+default_doctor_query = """
+INSERT INTO das_data.users (id, role) VALUES ('00000000-0000-0000-0000-000000000000', 'Doctor') 
+ON CONFLICT DO NOTHING;
+"""
+
+setup_queries = [schema_query, users_query, therapy_query, image_query, examination_query, default_doctor_query]

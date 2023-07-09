@@ -1,4 +1,12 @@
 from db_module.db_client import db_client, logging
+from image_processing.image_processing import ImageProcessing
+from glob import glob
+from io import BytesIO
+from zipfile import ZipFile
+import os
+
+img_processing_class = ImageProcessing()
+DEFAULT_DOCTOR_ID = "00000000-0000-0000-0000-000000000000"
 
 
 def perform_registration(user_dict):
@@ -71,32 +79,65 @@ def perform_delete_therapy_by_id(therapy_id):
     return status_flag
 
 
+def filter_therapies(list_of_therapies, examination_dict):
+    filtered_therapies = list()
+    for therapy in list_of_therapies:
+        if examination_dict["location"] != therapy["location"]:
+            continue
+        if not (therapy["length_of_existence_weeks_from"]
+                <= int(examination_dict["length_of_existence_weeks"])
+                < therapy["length_of_existence_weeks_to"]):
+            continue
+        if therapy["dimension_width_mm"] != int(examination_dict["dimension_width_mm"]):
+            continue
+        if therapy["dimension_height_mm"] != int(examination_dict["dimension_height_mm"]):
+            continue
+        if not (therapy["patient_age_from"]
+                <= int(examination_dict["patient_age"])
+                < therapy["patient_age_to"]):
+            continue
+        if therapy["gender"] != examination_dict["gender"]:
+            continue
+        if not (therapy["number_of_instances_from"]
+                <= int(examination_dict["number_of_instances"])
+                < therapy["number_of_instances_to"]):
+            continue
+        filtered_therapies.append(therapy)
+    if len(filtered_therapies) == 0:
+        filtered_therapies = [item for item in list_of_therapies if item["doctor_id"] == DEFAULT_DOCTOR_ID]
+    return filtered_therapies
+
+
 def perform_examination(examination_dict):
     return_dict = {"resulting_disease": "", "therapies": list()}
 
-    # TODO: IMPLEMENT FOLLOWING METHOD
-    # image_processing_status_flag, resulting_disease = run_image_classification(examination_dict["image_name"])
-    image_processing_status_flag = True
-    resulting_disease = "Basal cell cancer"
+    status_flag, result_disease, result_confidence = \
+        img_processing_class.run_odt_and_draw_results(examination_dict["image_name"])
+    # status_flag = True
+    # result_disease = "Basal cell cancer"
+    # result_confidence = 99.6
 
-    if image_processing_status_flag:
-        return_dict["resulting_disease"] = resulting_disease
-        # TODO: UPDATE TO FILTER WITH SURVEY
-        status_flag, therapies = db_client.get_therapies_by_disease(resulting_disease)
+    if status_flag:
+        logging.info(f"Image {examination_dict['image_name']} "
+                     f"classified as {result_disease} with confidence {result_confidence}%")
+
+        return_dict["resulting_disease"] = result_disease
+        status_flag, therapies = db_client.get_therapies_by_disease(result_disease)
+        therapies = filter_therapies(therapies, examination_dict)
         if status_flag:
             return_dict["therapies"] = therapies
         else:
-            logging.warning(f"Unable to fetch therapies for disease {resulting_disease}")
+            logging.warning(f"Unable to fetch therapies for disease {result_disease}")
     else:
         logging.warning(f"Unable to process image {examination_dict['image_name']} "
                         f"of patient {examination_dict['examination_dict']}")
 
-    status_flag, image_id = db_client.add_image(examination_dict["image_name"], image_processing_status_flag)
+    status_flag, image_id = db_client.add_image(examination_dict["image_name"], status_flag)
     if status_flag is False:
         logging.warning("Image wasn't uploaded successfully")
         return return_dict
 
-    status_flag = db_client.add_examination(examination_dict["patient_id"], image_id, resulting_disease)
+    status_flag = db_client.add_examination(examination_dict["patient_id"], image_id, result_disease)
     if status_flag is False:
         logging.warning("Examination log wasn't uploaded successfully")
 
@@ -115,4 +156,10 @@ def perform_get_examinations_by_patient_id(patient_id):
 def perform_get_examinations_images_by_ids(image_ids):
     # https://stackoverflow.com/questions/8637153/how-to-return-images-in-flask-response
     # https://stackoverflow.com/questions/69881709/downloading-multiple-files-in-flask
-    pass
+
+    stream = BytesIO()
+    with ZipFile(stream, 'w') as zf:
+        for file in image_ids:
+            zf.write("examination_images/" + file, file + '.jpg')
+    stream.seek(0)
+    return stream

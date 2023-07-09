@@ -38,3 +38,21 @@ def get_db_config(filename='config.ini'):
         logging.error(f"Unable to fetch DB configuration properly due to error: {e}")
 
     return db_config
+
+
+def get_image_processing_config(filename='config.ini'):
+    image_processing_config = dict()
+    try:
+        parser = ConfigParser()
+        parser.read(filename)
+
+        # reading postgres config
+        params = parser.items('IMAGEPROCESSING')
+        for param in params:
+            image_processing_config[param[0]] = param[1]
+
+        logging.info("DB configuration successfully fetched")
+    except Exception as e:
+        logging.error(f"Unable to fetch DB configuration properly due to error: {e}")
+
+    return image_processing_config
