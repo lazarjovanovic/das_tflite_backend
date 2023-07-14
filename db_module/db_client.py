@@ -51,6 +51,7 @@ class DBClient(object):
     def login_search(self, username, password):
         status_flag = False
         user_id = None
+        user_role = None
         query = f"SELECT * FROM das_data.users WHERE username='{username}' AND password='{password}';"
         try:
             cur = self.conn.cursor()
@@ -58,6 +59,7 @@ class DBClient(object):
             users = cur.fetchall()
             if len(users) == 1:
                 user_id = users[0][0]
+                user_role = users[0][7]
                 status_flag = True
                 logging.info(f"User by defined username and password found")
             else:
@@ -65,7 +67,7 @@ class DBClient(object):
         except Exception as e:
             logging.error(f"Unable to query users by username and password due to error: {e}")
 
-        return status_flag, user_id
+        return status_flag, user_id, user_role
 
     def register_search(self, username):
         status_flag = False
@@ -98,6 +100,7 @@ class DBClient(object):
 
         status = False
         return_uuid = None
+        return_role = None
         try:
             cur = self.conn.cursor()
             cur.execute(query)
@@ -105,10 +108,11 @@ class DBClient(object):
             self.conn.commit()
             status = True
             return_uuid = user_uuid
+            return_role = user_dict["role"]
             logging.info(f"New user with id {user_uuid} registered successfully")
         except Exception as e:
             logging.error(f"Unable to register new user due to error: {e}")
-        return status, return_uuid
+        return status, return_uuid, return_role
 
     def add_therapy(self, therapy_dict):
         therapy_dict_keys = list(therapy_dict.keys())

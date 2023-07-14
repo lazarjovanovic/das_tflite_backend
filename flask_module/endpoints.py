@@ -4,19 +4,22 @@ import flask_module.features as flask_features
 import base64
 from utils.read_config import PATH_STORE_EXAMINATION_IMAGES
 from datetime import datetime
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
-    data["password"] = base64.b64encode(data["password"].encode("utf-8"))
-    data["password"] = base64.b64decode(data["password"]).decode("utf-8")
+    # data["password"] = base64.b64encode(data["password"].encode("utf-8"))
+    # data["password"] = base64.b64decode(data["password"]).decode("utf-8")
 
-    user_id = flask_features.perform_login(data)
-    return_dict = {"user_id": user_id}
-    return jsonify(return_dict)
+    user_id, user_role = flask_features.perform_login(data)
+    return_dict = {"user_id": user_id, "user_role": user_role}
+    response = jsonify(return_dict)
+    return response
 
 
 @app.route("/register", methods=["POST"])
@@ -25,9 +28,10 @@ def register():
     data["password"] = base64.b64encode(data["password"].encode("utf-8"))
     data["password"] = base64.b64decode(data["password"]).decode("utf-8")
 
-    user_id = flask_features.perform_registration(data)
-    return_dict = {"user_id": user_id}
-    return jsonify(return_dict)
+    user_id, user_role = flask_features.perform_registration(data)
+    return_dict = {"user_id": user_id, "user_role": user_role}
+    response = jsonify(return_dict)
+    return response
 
 
 @app.route("/add_therapy", methods=["POST"])
