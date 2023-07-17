@@ -3,6 +3,7 @@ from image_processing.image_processing import ImageProcessing
 from glob import glob
 from io import BytesIO
 from zipfile import ZipFile
+from datetime import date
 import os
 
 img_processing_class = ImageProcessing()
@@ -12,6 +13,11 @@ DEFAULT_DOCTOR_ID = "00000000-0000-0000-0000-000000000000"
 def perform_registration(user_dict):
     user_id = None
     user_role = None
+    dob = user_dict["dob"]
+    date_now = str(date.today())
+    if dob >= date_now:
+        logging.warning(f"Unable to create user with DOB in the future")
+        return user_id, user_role
     status_flag = db_client.register_search(user_dict["username"])
     if status_flag:
         logging.info(f"Starting user registration")
