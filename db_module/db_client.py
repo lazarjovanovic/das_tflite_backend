@@ -182,7 +182,8 @@ class DBClient(object):
                 therapy_dict["gender"] = therapy[9]
                 therapy_dict["number_of_instances_from"] = therapy[10]
                 therapy_dict["number_of_instances_to"] = therapy[11]
-                therapy_dict["doctor_id"] = therapy[12]
+                therapy_dict["description"] = therapy[12]
+                therapy_dict["doctor_id"] = therapy[13]
                 therapies_list.append(therapy_dict)
 
             status_flag = True
@@ -216,7 +217,8 @@ class DBClient(object):
                 therapy_dict["gender"] = therapy[9]
                 therapy_dict["number_of_instances_from"] = therapy[10]
                 therapy_dict["number_of_instances_to"] = therapy[11]
-                therapy_dict["doctor_id"] = therapy[12]
+                therapy_dict["description"] = therapy[12]
+                therapy_dict["doctor_id"] = therapy[13]
                 therapies_list.append(therapy_dict)
 
             status_flag = True
