@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS das_data.therapies
     gender text,
     number_of_instances_from integer,
     number_of_instances_to integer,
-    description text,
-    doctor_id uuid REFERENCES das_data.users(id)
+    doctor_id uuid REFERENCES das_data.users(id),
+    description text
 );
 """
 
