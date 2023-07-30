@@ -173,15 +173,24 @@ class DBClient(object):
                 therapy_dict["id"] = therapy[0]
                 therapy_dict["disease"] = therapy[1]
                 therapy_dict["location"] = therapy[2]
-                therapy_dict["length_of_existence_weeks_from"] = therapy[3]
-                therapy_dict["length_of_existence_weeks_to"] = therapy[4]
+                loe_weeks_end = therapy[4]
+                if loe_weeks_end == 200:
+                    therapy_dict["length_of_existence_weeks"] = str(therapy[3]) + "+"
+                else:
+                    therapy_dict["length_of_existence_weeks"] = str(therapy[3]) + "-" + str(therapy[4])
                 therapy_dict["dimension_width_mm"] = therapy[5]
                 therapy_dict["dimension_height_mm"] = therapy[6]
-                therapy_dict["patient_age_from"] = therapy[7]
-                therapy_dict["patient_age_to"] = therapy[8]
+                patient_age_end = therapy[8]
+                if patient_age_end == 200:
+                    therapy_dict["patient_age"] = str(therapy[7]) + "+"
+                else:
+                    therapy_dict["patient_age"] = str(therapy[7]) + "-" + str(therapy[8])
                 therapy_dict["gender"] = therapy[9]
-                therapy_dict["number_of_instances_from"] = therapy[10]
-                therapy_dict["number_of_instances_to"] = therapy[11]
+                instances_no_end = therapy[11]
+                if instances_no_end == 200:
+                    therapy_dict["number_of_instances"] = str(therapy[10]) + "+"
+                else:
+                    therapy_dict["number_of_instances"] = str(therapy[10]) + "-" + str(therapy[11])
                 therapy_dict["doctor_id"] = therapy[12]
                 therapy_dict["description"] = therapy[13]
                 therapies_list.append(therapy_dict)
