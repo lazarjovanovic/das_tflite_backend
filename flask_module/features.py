@@ -113,6 +113,49 @@ def filter_therapies(list_of_therapies, examination_dict):
         filtered_therapies.append(therapy)
     if len(filtered_therapies) == 0:
         filtered_therapies = [item for item in list_of_therapies if item["doctor_id"] == DEFAULT_DOCTOR_ID]
+
+    for therapy in filtered_therapies:
+        if therapy["location"] == "":
+            therapy["location"] = "All locations"
+        if therapy["gender"] == "":
+            therapy["gender"] = "All genders"
+
+        loe_weeks_start = therapy["length_of_existence_weeks_from"]
+        loe_weeks_end = therapy["length_of_existence_weeks_to"]
+        if loe_weeks_end == 200:
+            if loe_weeks_start == 0:
+                therapy["length_of_existence_weeks"] = "All lengths of existence"
+            else:
+                therapy["length_of_existence_weeks"] = str(loe_weeks_start) + "+"
+        else:
+            therapy["length_of_existence_weeks"] = str(loe_weeks_start) + "-" + str(loe_weeks_end)
+        del therapy["length_of_existence_weeks_from"]
+        del therapy["length_of_existence_weeks_to"]
+
+        age_start = therapy["patient_age_from"]
+        age_end = therapy["patient_age_to"]
+        if age_end == 200:
+            if age_start == 0:
+                therapy["patient_age"] = "All ages"
+            else:
+                therapy["patient_age"] = str(age_start) + "+"
+        else:
+            therapy["patient_age"] = str(age_start) + "-" + str(age_end)
+        del therapy["patient_age_from"]
+        del therapy["patient_age_to"]
+
+        number_of_instances_start = therapy["number_of_instances_from"]
+        number_of_instances_end = therapy["number_of_instances_to"]
+        if number_of_instances_end == 200:
+            if number_of_instances_start == 0:
+                therapy["number_of_instances"] = "All numbers of occurrences"
+            else:
+                therapy["number_of_instances"] = str(number_of_instances_start) + "+"
+        else:
+            therapy["number_of_instances"] = str(number_of_instances_start) + "-" + str(number_of_instances_end)
+        del therapy["number_of_instances_from"]
+        del therapy["number_of_instances_to"]
+
     return filtered_therapies
 
 
