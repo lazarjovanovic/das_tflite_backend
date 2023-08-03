@@ -139,3 +139,14 @@ def get_examination_images():
     image_ids = request.json
     images = flask_features.perform_get_examinations_images_by_ids(image_ids)
     return send_file(images, as_attachment=True, download_name="images.zip")
+
+
+@app.route("/get_examination_image/<image_id>", methods=["GET"])
+def get_examination_image(image_id: str):
+    authorization_id = request.headers.get("Authorization", "")
+    if authorization_id == "":
+        return "Authorization failed", 401
+
+    project_path = os.getcwd()
+    filename = project_path + "\\examination_images\\" + image_id
+    return send_file(filename, mimetype='image/jpg')
